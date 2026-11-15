@@ -1,0 +1,288 @@
+/* All styling for the Animator app. The .gleam files only attach class names. */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
+
+/* ── Layout: two columns ─────────────────────────────────────────────────── */
+
+.app {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background: #1a1a2e;
+  color: #d4c5a0;
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+}
+
+/* Left column: the code editor. */
+.code-col {
+  width: 42%;
+  min-width: 320px;
+  max-width: 720px;
+  flex-shrink: 0;
+  display: flex;
+  border-right: 1px solid #3a3a5e;
+  background: #0f0f1e;
+}
+
+/* The code column stays in the DOM when collapsed, so CodeMirror keeps its
+   state; hiding it gives the right column the full width. */
+.app.code-hidden .code-col { display: none; }
+
+/* A small emoji button (the code pane's collapse toggle, and the playback
+   controls once they exist). */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #2a2a4a;
+  color: #d4c5a0;
+  border: 1px solid #4a4a8a;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 5px 8px;
+}
+.icon-btn:hover { background: #3a3a5e; }
+
+/* ── Code panel (left column) ───────────────────────────────────────────── */
+
+.code-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #1a1a3e;
+  border-bottom: 1px solid #3a3a5e;
+}
+.code-title {
+  color: #e8d8b0;
+  font-family: 'Georgia', serif;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+/* Wrapper holding the editor. */
+.code-editor-wrap {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+}
+/* CodeMirror mount node: grows to fill the panel. */
+.code-editor {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+  background: #0d0d1a;
+}
+.code-editor .cm-editor { width: 100%; height: 100%; }
+
+/* Collapsible reference of the built-ins available to draw functions. */
+.reference {
+  margin: 8px 14px 0;
+  border: 1px solid #3a3a5e;
+  border-radius: 4px;
+  background: #0d0d1a;
+  overflow: hidden;
+}
+.reference-summary {
+  padding: 6px 12px;
+  cursor: pointer;
+  color: #b8a888;
+  font-family: monospace;
+  font-size: 12px;
+  user-select: none;
+}
+.reference-summary:hover { color: #e8d8b0; }
+.reference-body {
+  padding: 4px 12px 10px;
+  border-top: 1px solid #3a3a5e;
+}
+.reference-group { margin-top: 8px; }
+.reference-group-title {
+  color: #8a8aca;
+  font-family: monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+.reference-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  padding: 1px 0;
+}
+.reference-sig {
+  color: #89ddff;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre;
+}
+.reference-desc { color: #6a7a8a; font-size: 11px; }
+
+/* ── Animation area (right column) ──────────────────────────────────────── */
+
+.canvas-area {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0a0a14;
+  container-type: size;
+}
+
+/* The interpreter's List(Path) (or its error), shown as text before the
+   animation pane is built. */
+.output {
+  align-self: stretch;
+  margin: 0;
+  padding: 16px;
+  overflow: auto;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #cfe3ff;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+/* Leave room for the reveal button, which only overlays this pane while the
+   code column is hidden. */
+.app.code-hidden .output { padding-top: 48px; }
+
+/* Button that reveals the code column again when it is hidden. */
+.reveal-code {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+}
+
+/* A centred square that fits the (possibly non-square) animation area. Give your
+   <canvas> this class, so that drawings aren't stretched. */
+.canvas {
+  width: min(100cqw, 100cqh);
+  height: min(100cqw, 100cqh);
+}
+
+
+/* Keep code errors readable above the drawing without moving the canvas. */
+.error-message {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  max-height: 40%;
+  border: 1px solid #9f5364;
+  border-radius: 6px;
+  background: #241724;
+  color: #ffced5;
+}
+
+.animation-pane {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.control-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+  padding: 16px 20px;
+  background: #1a1a2e;
+  border-top: 1px solid #3a3a5e;
+}
+.slider-control {
+  flex: 1 1 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+}
+.slider-control input { width: 100%; accent-color: #c084fc; cursor: pointer; }
+.control-hint { color: #a9a4bb; font-size: 11px; }
+
+.playback-controls {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.playback-controls .icon-btn { padding: 8px 12px; }
+.icon-btn:focus-visible { outline: 2px solid #c084fc; outline-offset: 3px; }
+
+.drawing-control { flex-basis: 100%; }
+.drawing-control select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #4a4a8a;
+  border-radius: 5px;
+  background: #24243d;
+  color: #eee4ff;
+  font: inherit;
+}
+
+/* Geometry Studio: keep the canvas dominant and controls accessible. */
+.app { color: #d6d8ed; background: #10111f; }
+.animation-pane { min-height: 0; }
+.canvas-area { min-height: 180px; }
+.studio-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 14px; flex-wrap: wrap; padding: 18px 24px;
+  background: #131524; border-bottom: 1px solid #2d304b;
+}
+.eyebrow { color: #a8a1d4; font-size: 10px; letter-spacing: .16em; margin-bottom: 5px; }
+.studio-header h1 { font: 500 25px Georgia, serif; color: #f2eaff; letter-spacing: -.02em; }
+.studio-subtitle { color: #9295af; font-size: 12px; margin-top: 5px; }
+.studio-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.studio-actions .icon-btn { min-height: 34px; padding: 8px 11px; font-size: 12px; }
+.export-btn { background: #b9a2f2; border-color: #b9a2f2; color: #171125; }
+.export-btn:hover { background: #d2befc; }
+.icon-btn:disabled { opacity: .4; cursor: default; }
+.controls-scroll { flex-shrink: 0; max-height: 48vh; overflow-y: auto; background: #161827; }
+.control-panel { padding: 12px 20px; gap: 12px 24px; background: #161827; }
+.drawing-control { flex-basis: 200px; }
+.playback-controls { flex-basis: auto; align-items: center; }
+.studio-panel { border-top: 1px solid #30334c; padding: 0 20px 12px; }
+.studio-panel summary { cursor: pointer; padding: 12px 0; color: #d4c2fa; font-size: 12px; letter-spacing: .025em; }
+.studio-grid { display: grid; grid-template-columns: minmax(160px, 1fr) minmax(150px, 1fr); gap: 14px 24px; }
+.studio-grid select { background: #24243d; color: #eee4ff; border: 1px solid #4a4a8a; border-radius: 5px; padding: 7px 10px; width: 100%; }
+.check-control { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #a9adc7; cursor: pointer; }
+.check-control input { accent-color: #b9a2f2; }
+.studio-footer { margin-top: 14px; display: flex; align-items: center; gap: 12px; font-size: 10px; color: #9295af; flex-wrap: wrap; }
+.swatches { display: flex; gap: 4px; }
+.swatches span { width: 13px; height: 13px; border-radius: 50%; }
+@media (max-width: 760px) {
+  .code-col { width: 40%; min-width: 240px; }
+  .studio-header { padding: 12px 14px; }
+  .studio-header h1 { font-size: 21px; }
+  .studio-grid { grid-template-columns: 1fr; }
+  .control-panel { gap: 10px; }
+}
+@media (max-width: 540px) {
+  .app { flex-direction: column; }
+  .code-col { width: 100%; max-width: none; min-width: 0; height: 30vh; min-height: 140px; }
+  .animation-pane { min-height: 0; }
+  .studio-header .studio-subtitle { display: none; }
+  .studio-header { padding: 8px 12px; }
+  .studio-actions .icon-btn { font-size: 11px; }
+  .canvas-area { min-height: 100px; }
+  .controls-scroll { max-height: 30vh; }
+}
